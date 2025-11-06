@@ -22,8 +22,8 @@ ifneq (,$(CUDA_HOME))
   PKG_CPPFLAGS += -I"$(CUDA_HOME)/include" -DWITH_CUDA
 endif
 
-# Add libtorch to the ld library path
-PKG_LIBS += -L"$(LIBTORCH_INCLUDE)"/lib -ltorch -ltorch_cpu -lc10
+# Add libtorch to the dyld library path, and embed it in the .so file
+PKG_LIBS += -L"$(LIBTORCH_INCLUDE)"/lib -Wl,-rpath,"$(LIBTORCH_INCLUDE)"/lib -ltorch -ltorch_cpu -lc10
 
 # For CUDA support
 ifneq (,$(HAVE_CUDA))
@@ -36,13 +36,13 @@ ifeq ($(UNAME), Darwin)
 endif
 
 # Source local files
-CPPLIBS = \
+PKG_SOURCES = \
   cpu/ms_deform_attn_cpu.cpp \
   ms_deform_attn.cpp
 
 # CUDA source
 ifneq (,$(HAVE_CUDA))
-  CUDA_SOURCES = cuda/ms_deform_attn_cuda.cu
+  PKG_SOURCES += cuda/ms_deform_attn_cuda.cu
 endif
 
 # Compiler settings
