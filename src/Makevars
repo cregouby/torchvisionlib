@@ -22,7 +22,7 @@ ifneq (,$(CUDA_HOME))
   PKG_CPPFLAGS += -I"$(CUDA_HOME)/include" -DWITH_CUDA
 endif
 
-# Add torch library path
+# Add libtorch to the ld library path
 PKG_LIBS += -L"$(LIBTORCH_INCLUDE)"/lib -ltorch -ltorch_cpu -lc10
 
 # For CUDA support
