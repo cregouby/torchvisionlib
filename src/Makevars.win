@@ -1,6 +1,10 @@
 # Get torch paths from the R package installation
-TORCH_INCLUDE_PATH = $(shell Rscript -e "cat(system.file('include', package = 'torch'))")
+TORCH_INCLUDE_PATH = $(shell Rscript -e "cat(system.file('include/torch/csrc/api/include', package = 'torch'))")
 TORCH_LIB_PATH = $(shell Rscript -e "cat(system.file('lib', package = 'torch'))")
+
+# Add debug prints
+$(warning --- TORCH_INCLUDE_PATH: $(TORCH_INCLUDE_PATH))
+$(warning --- TORCH_LIB_PATH: $(TORCH_LIB_PATH))
 
 TORCH_CPPFLAGS = -I"$(TORCH_INCLUDE_PATH)"
 TORCH_LDFLAGS = -L"$(TORCH_LIB_PATH)" -ltorch -ltorch_cpu -lc10

@@ -23,16 +23,16 @@ torch::Tensor forward(
     const torch::Tensor &attn_weight,
     const int im2col_step)
 {
-  if (value.type().is_cuda())
+  if (value.is_cuda())
   {
 #ifdef WITH_CUDA
     return forward_cuda(
       value, spatial_shapes, level_start_index, sampling_loc, attn_weight, im2col_step);
 #else
-    TORCH_ERROR("Not compiled with GPU support");
+    TORCH_CHECK(false, "Not compiled with GPU support");
 #endif
   }
-  TORCH_ERROR("Not implemented on the CPU");
+  TORCH_CHECK(false, "Not implemented on the CPU");
 }
 
 std::vector<torch::Tensor> backward(
@@ -44,16 +44,16 @@ std::vector<torch::Tensor> backward(
     const torch::Tensor &grad_output,
     const int im2col_step)
 {
-  if (value.type().is_cuda())
+  if (value.is_cuda())
   {
 #ifdef WITH_CUDA
     return backward_cuda(
       value, spatial_shapes, level_start_index, sampling_loc, attn_weight, grad_output, im2col_step);
 #else
-    TORCH_ERROR("Not compiled with GPU support");
+    TORCH_CHECK(false, "Not compiled with GPU support");
 #endif
   }
-  TORCH_ERROR("Not implemented on the CPU");
+  TORCH_CHECK(false, "Not implemented on the CPU");
 }
 
 }
