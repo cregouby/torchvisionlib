@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include <torch/extension.h>
+#include <torch/torch.h>
 
 #ifdef WITH_CUDA
 #include "cuda/ms_deform_attn_cuda.h"
