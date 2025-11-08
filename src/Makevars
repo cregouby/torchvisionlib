@@ -1,13 +1,17 @@
 # Get torch paths from the R package installation
-TORCH_INCLUDE_PATH = $(shell Rscript -e "cat(system.file('include/torch/csrc/api/include', package = 'torch'))")
-TORCH_LIB_PATH = $(shell Rscript -e "cat(system.file('lib', package = 'torch'))")
+TORCH_INCLUDE_PATH := $(shell Rscript -e "cat(system.file('include/torch/csrc/api/include', package = 'torch'))" | tail -n1)
+TORCH_LIB_PATH := $(shell Rscript -e "cat(system.file('lib', package = 'torch'))" | tail -n1)
 
 # Add debug prints
-$(warning --- TORCH_INCLUDE_PATH: $(TORCH_INCLUDE_PATH))
-$(warning --- TORCH_LIB_PATH: $(TORCH_LIB_PATH))
+ifneq (,$(wildcard $(TORCH_INCLUDE_PATH)/torch/torch.h))
+   $(warning --- VALID TORCH INCLUDE PATH: $(TORCH_INCLUDE_PATH))
+else
+   $(error TORCH INCLUDE PATH INVALID: $(TORCH_INCLUDE_PATH))
+endif
+$(warning --- TORCH_LIB_PATH: [$(TORCH_LIB_PATH)])
 
 TORCH_CPPFLAGS = -I"$(TORCH_INCLUDE_PATH)"
-TORCH_LDFLAGS = -L"$(TORCH_LIB_PATH)" -ltorch -ltorch_cpu -lc10
+TORCH_LDFLAGS = -L"$(TORCH_LIB_PATH)" -ltorch -ltorch_cpu -lc10 -ltorch_jit -Wl,-rpath,$(TORCH_LIB_PATH)
 
 PKG_CPPFLAGS = -I../inst/include/ $(TORCH_CPPFLAGS)
 
@@ -43,6 +47,7 @@ ifneq (,$(CUDA_HOME))
 	# .cu files are compiled by $(NVCC)
 	OBJECTS += cuda/ms_deform_attn_cuda.o
 endif
+$(warning --- WITH_CUDA: $(WITH_CUDA))
 
 # --- Compilation Rules ---
 
