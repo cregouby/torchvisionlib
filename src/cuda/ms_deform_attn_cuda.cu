@@ -13,16 +13,17 @@
 #include "ms_deform_attn_cuda.h"
 #include "ms_deform_im2col_cuda.cuh"
 
-using namespace ms_deform_attn;
+// using namespace ms_deform_attn;
 
-torch::Tensor ms_deform_attn::forward_cuda(
-    const torch::Tensor &value,
-    const torch::Tensor &spatial_shapes,
-    const torch::Tensor &level_start_index,
-    const torch::Tensor &sampling_loc,
-    const torch::Tensor &attn_weight,
-    const int im2col_step)
-{
+extern "C" {
+    torch::Tensor ms_deform_attn_forward_cuda(
+        const torch::Tensor &value,
+        const torch::Tensor &spatial_shapes,
+        const torch::Tensor &level_start_index,
+        const torch::Tensor &sampling_loc,
+        const torch::Tensor &attn_weight,
+        const int im2col_step)
+    {
     TORCH_CHECK(value.is_contiguous(), "value tensor has to be contiguous");
     TORCH_CHECK(spatial_shapes.is_contiguous(), "spatial_shapes tensor has to be contiguous");
     TORCH_CHECK(level_start_index.is_contiguous(), "level_start_index tensor has to be contiguous");
@@ -73,17 +74,17 @@ torch::Tensor ms_deform_attn::forward_cuda(
     output = output.view({batch, num_query, num_heads * channels});
 
     return output;
-}
+    }
 
-std::vector<torch::Tensor> ms_deform_attn::backward_cuda(
-    const torch::Tensor &value,
-    const torch::Tensor &spatial_shapes,
-    const torch::Tensor &level_start_index,
-    const torch::Tensor &sampling_loc,
-    const torch::Tensor &attn_weight,
-    const torch::Tensor &grad_output,
-    const int im2col_step)
-{
+  std::vector<torch::Tensor> ms_deform_attn_backward_cuda(
+        const torch::Tensor &value,
+        const torch::Tensor &spatial_shapes,
+        const torch::Tensor &level_start_index,
+        const torch::Tensor &sampling_loc,
+        const torch::Tensor &attn_weight,
+        const torch::Tensor &grad_output,
+        const int im2col_step)
+  {
     TORCH_CHECK(value.is_contiguous(), "value tensor has to be contiguous");
     TORCH_CHECK(spatial_shapes.is_contiguous(), "spatial_shapes tensor has to be contiguous");
     TORCH_CHECK(level_start_index.is_contiguous(), "level_start_index tensor has to be contiguous");
@@ -138,13 +139,14 @@ std::vector<torch::Tensor> ms_deform_attn::backward_cuda(
               grad_value.data_ptr<scalar_t>() + n * im2col_step_ * per_value_size,
               grad_sampling_loc.data_ptr<scalar_t>() + n * im2col_step_ * per_sample_loc_size,
               grad_attn_weight.data_ptr<scalar_t>() + n * im2col_step_ * per_attn_weight_size); }));
-    }
+        }
 
     return {grad_value, grad_sampling_loc, grad_attn_weight};
+  }
 }
 
 TORCH_LIBRARY_IMPL(ms_deform_attn, CUDA, m)
 {
-  m.impl("forward", &forward_cuda);
-  m.impl("backward", &backward_cuda);
+  m.impl("forward", &ms_deform_attn_forward_cuda);
+  m.impl("backward", &ms_deform_attn_backward_cuda);
 }

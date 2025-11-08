@@ -10,10 +10,9 @@ else
 endif
 $(warning --- TORCH_LIB_PATH: [$(TORCH_LIB_PATH)])
 
-TORCH_CPPFLAGS = -I"$(TORCH_INCLUDE_PATH)"
-TORCH_LDFLAGS = -L"$(TORCH_LIB_PATH)" -ltorch -ltorch_cpu -lc10 -ltorch_jit -Wl,-rpath,$(TORCH_LIB_PATH)
+TORCH_LDFLAGS = -L"$(TORCH_LIB_PATH)" -ltorch -ltorch_cpu -lc10 -Wl,-rpath,'$$ORIGIN/../../torch/lib' -Wl,-rpath,'$(TORCH_LIB_PATH)'
 
-PKG_CPPFLAGS = -I../inst/include/ $(TORCH_CPPFLAGS)
+PKG_CPPFLAGS = -I../inst/include/ -I"$(TORCH_INCLUDE_PATH)"
 
 # Detect the OS
 UNAME := $(shell uname)
@@ -41,11 +40,14 @@ ifneq (,$(CUDA_HOME))
   NVCC := $(CUDA_HOME)/bin/nvcc
 	# We need -std=c++17 for LibTorch compatibility
 	# We need -Xcompiler -fPIC for a shared object
-	NVCCFLAGS = -O3 -std=c++17 -Xcompiler -fPIC --expt-relaxed-constexpr -D_GLIBCXX_USE_CXX11_ABI=0
+	NVCCFLAGS = -O3 -std=c++17 -Xcompiler -fPIC --expt-relaxed-constexpr
   PKG_LIBS += -L"$(CUDA_HOME)/lib64" -lcudart
   PKG_CPPFLAGS += -I"$(CUDA_HOME)/include" -DWITH_CUDA
 	# .cu files are compiled by $(NVCC)
 	OBJECTS += cuda/ms_deform_attn_cuda.o
+else
+  WITH_CUDA := 0
+  $(warning --- CUDA_HOME not set, skipping CUDA compilation)
 endif
 $(warning --- WITH_CUDA: $(WITH_CUDA))
 
@@ -57,8 +59,11 @@ all: $(SHLIB)
 # Rule to compile .cu files in the cuda/ directory
 # $< is the first prerequisite (the .cu file)
 # $@ is the target (the .o file)
+ifneq (,$(filter 1,$(WITH_CUDA)))
 cuda/%.o: cuda/%.cu
+	@echo "Compiling CUDA file: $<"
 	$(NVCC) $(NVCCFLAGS) $(PKG_CPPFLAGS) -c $< -o $@
+endif
 
 # C++ files (like ms_deform_attn_R.cpp) are compiled by the default .cpp.o rule
 # We just need to make sure it uses C++17
