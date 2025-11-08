@@ -45,3 +45,36 @@ rcpp_tensor_pair_get_second <- function(x) {
     .Call(`_torchvisionlib_rcpp_tensor_pair_get_second`, x)
 }
 
+#' Multiscale Deformable Attention Forward Pass
+#'
+#' @param value Input tensor (value)
+#' @param spatial_shapes Input tensor (spatial_shapes)
+#' @param level_start_index Input tensor (level_start_index)
+#' @param sampling_loc Input tensor (sampling_loc)
+#' @param attn_weight Input tensor (attn_weight)
+#' @param im2col_step Integer (im2col_step)
+#' @return Output tensor
+#' @keywords internal
+NULL
+
+#' Multiscale Deformable Attention Backward Pass
+#'
+#' @param value Input tensor (value)
+#' @param spatial_shapes Input tensor (spatial_shapes)
+#' @param level_start_index Input tensor (level_start_index)
+#' @param sampling_loc Input tensor (sampling_loc)
+#' @param attn_weight Input tensor (attn_weight)
+#' @param grad_output Input tensor (grad_output)
+#' @param im2col_step Integer (im2col_step)
+#' @return A list of gradient tensors (grad_value, grad_sampling_loc, grad_attn_weight)
+#' @keywords internal
+NULL
+
+ms_deform_attn_forward_cpp <- function(value, spatial_shapes, level_start_index, sampling_loc, attn_weight, im2col_step) {
+    .Call(`_torchvisionlib_ms_deform_attn_forward_cpp`, value, spatial_shapes, level_start_index, sampling_loc, attn_weight, im2col_step)
+}
+
+ms_deform_attn_backward_cpp <- function(value, spatial_shapes, level_start_index, sampling_loc, attn_weight, grad_output, im2col_step) {
+    .Call(`_torchvisionlib_ms_deform_attn_backward_cpp`, value, spatial_shapes, level_start_index, sampling_loc, attn_weight, grad_output, im2col_step)
+}
+
