@@ -1,55 +1,74 @@
-# Include auto-generated exports header
-PKG_CPPFLAGS += -I../inst/include
+# Get torch paths from the R package installation
+TORCH_INCLUDE_PATH := $(shell Rscript -e "cat(system.file('include/torch/csrc/api/include', package = 'torch'))" | tail -n1)
+TORCH_LIB_PATH := $(shell Rscript -e "cat(system.file('lib', package = 'torch'))" | tail -n1)
 
-R_HOME := $(shell R RHOME)
+# Add debug prints
+ifneq (,$(wildcard $(TORCH_INCLUDE_PATH)/torch/torch.h))
+   $(warning --- VALID TORCH INCLUDE PATH: $(TORCH_INCLUDE_PATH))
+else
+   $(error TORCH INCLUDE PATH INVALID: $(TORCH_INCLUDE_PATH))
+endif
+$(warning --- TORCH_LIB_PATH: [$(TORCH_LIB_PATH)])
 
+TORCH_LDFLAGS = -L"$(TORCH_LIB_PATH)" -ltorch -ltorch_cpu -lc10 -Wl,-rpath,'$$ORIGIN/../../torch/lib' -Wl,-rpath,'$(TORCH_LIB_PATH)'
+
+PKG_CPPFLAGS = -I../inst/include/ -I"$(TORCH_INCLUDE_PATH)"
+
+# Detect the OS
 UNAME := $(shell uname)
 ifeq ($(UNAME), Darwin)
   # This logic is macOS-specific and finds the C++ standard library headers (like <cmath>)
   SDK_PATH=$(shell xcrun --show-sdk-path)
   PKG_CPPFLAGS += -I"$(SDK_PATH)/usr/include/c++/v1"
 endif
+$(warning --- SDK_PATH: $(SDK_PATH))
 
-# Add torch include path
-LIBTORCH_INCLUDE := $(shell $(R_HOME)/bin/R -s -e "cat(torch:::torch_install_path())")
-PKG_CPPFLAGS += -I"$(LIBTORCH_INCLUDE)"/include/torch/csrc/api/include
-PKG_CPPFLAGS += -I"$(LIBTORCH_INCLUDE)"/include
+# Link against torch
+PKG_LIBS = $(TORCH_LDFLAGS)
 
-# Debug: Print paths to verify
-$(info LIBTORCH_INCLUDE is $(LIBTORCH_INCLUDE))
+# Define object files
+# .cpp files are compiled by $(CXX)
+CPP_OBJECTS = ms_deform_attn.o ms_deform_attn_autograd.o
 
-# Detect CUDA
+# Tell Make about all our objects
+OBJECTS = $(CPP_OBJECTS)
+
 # CUDA_HOME must exist as an env var.
 ifneq (,$(CUDA_HOME))
-  HAVE_CUDA := 1
+  WITH_CUDA := 1
+  # Set NVCC
   NVCC := $(CUDA_HOME)/bin/nvcc
+	# We need -std=c++17 for LibTorch compatibility
+	# We need -Xcompiler -fPIC for a shared object
+	NVCCFLAGS = -O3 -std=c++17 -Xcompiler -fPIC --expt-relaxed-constexpr
   PKG_LIBS += -L"$(CUDA_HOME)/lib64" -lcudart
   PKG_CPPFLAGS += -I"$(CUDA_HOME)/include" -DWITH_CUDA
+	# .cu files are compiled by $(NVCC)
+	OBJECTS += cuda/ms_deform_attn_cuda.o
+else
+  WITH_CUDA := 0
+  $(warning --- CUDA_HOME not set, skipping CUDA compilation)
+endif
+$(warning --- WITH_CUDA: $(WITH_CUDA))
+
+# --- Compilation Rules ---
+
+# This is the target R builds
+all: $(SHLIB)
+
+# Rule to compile .cu files in the cuda/ directory
+# $< is the first prerequisite (the .cu file)
+# $@ is the target (the .o file)
+ifneq (,$(filter 1,$(WITH_CUDA)))
+cuda/%.o: cuda/%.cu
+	@echo "Compiling CUDA file: $<"
+	$(NVCC) $(NVCCFLAGS) $(PKG_CPPFLAGS) -c $< -o $@
 endif
 
-# Add torch library path
-PKG_LIBS += -L"$(LIBTORCH_INCLUDE)"/lib -ltorch -ltorch_cpu -lc10
+# C++ files (like ms_deform_attn_R.cpp) are compiled by the default .cpp.o rule
+# We just need to make sure it uses C++17
+CXX_STD = CXX17
 
-# For CUDA support
-ifneq (,$(HAVE_CUDA))
-  PKG_LIBS += -ltorch_cuda
-endif
-
-# macOS specific linking
-ifeq ($(UNAME), Darwin)
-  PKG_LIBS += -ldl -lm -lpthread
-endif
-
-# Source local files
-CPPLIBS = \
-  ms_deform_attn_autograd.cpp \
-  torchvisionlib.cpp \
-  torchvisionlib_types.cpp
-
-# CUDA source
-ifneq (,$(HAVE_CUDA))
-  CUDA_SOURCES = cuda/ms_deform_attn_cuda.cu
-endif
-
-# Compiler settings
-CXX_STD = CXX20
+# Clean up our .o files
+clean:
+	rm -f $(OBJECTS)

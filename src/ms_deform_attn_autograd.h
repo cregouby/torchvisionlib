@@ -19,9 +19,9 @@ struct MSDeformAttnFunction : torch::autograd::Function<MSDeformAttnFunction> {
       const int im2col_step
   );
 
-    static std::vector<torch::Tensor> backward(
+    static torch::autograd::tensor_list backward(
         torch::autograd::AutogradContext *ctx,
-        const torch::Tensor &grad_output);
+        torch::autograd::variable_list grad_output);
 };
 
 // Public interface function

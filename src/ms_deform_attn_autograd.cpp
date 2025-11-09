@@ -17,20 +17,20 @@ torch::Tensor MSDeformAttnFunction::forward(
   );
   ctx->saved_data["im2col_step"] = im2col_step;
 
-  torch::Tensor out = torchvision::ms_deform_attn_forward(
+  torch::Tensor out = ms_deform_attn_forward(
     value,
     spatial_shapes,
     level_start_index,
     sampling_loc,
     attn_weight,
-    im2col_step);
+    im2col_step)[0];
 
   return out;
   }
 
 torch::autograd::tensor_list MSDeformAttnFunction::backward(
     torch::autograd::AutogradContext *ctx,
-    const torch::Tensor &grad_output)
+    torch::autograd::variable_list grad_output)
   {
   auto saved = ctx->get_saved_variables();
   const torch::Tensor &value            = saved[0];
@@ -40,9 +40,8 @@ torch::autograd::tensor_list MSDeformAttnFunction::backward(
   const torch::Tensor &attn_weight      = saved[4];
   const int im2col_step = ctx->saved_data["im2col_step"].toInt();
 
-  std::vector<torch::Tensor> grads =
-    torchvision::ms_deform_attn_backward(
-      grad_output,
+  std::vector<torch::Tensor> grads = ms_deform_attn_backward(
+      grad_output[0],
       value,
       spatial_shapes,
       level_start_idx,

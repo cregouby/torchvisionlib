@@ -11,8 +11,7 @@
 #include <torch/torch.h>
 #include "ms_deform_attn.h"
 
-// Wrapper for forward (returns single tensor for R simplicity)
-// [[Rcpp::export]]
+// Wrapper for forward
 torch::Tensor ms_deform_attn_forward_wrapper(
     const torch::Tensor &value,
     const torch::Tensor &spatial_shapes,
@@ -27,7 +26,6 @@ torch::Tensor ms_deform_attn_forward_wrapper(
 }
 
 // Backward wrapper
-// [[Rcpp::export]]
 std::vector<torch::Tensor> ms_deform_attn_backward_wrapper(
     const torch::Tensor &grad_output,
     const torch::Tensor &value,
