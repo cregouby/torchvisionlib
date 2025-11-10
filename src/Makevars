@@ -10,7 +10,7 @@ else
 endif
 $(warning --- TORCH_LIB_PATH: [$(TORCH_LIB_PATH)])
 
-TORCH_LDFLAGS = -L"$(TORCH_LIB_PATH)" -ltorch -ltorch_cpu -lc10 -Wl,-rpath,'$$ORIGIN/../../torch/lib' -Wl,-rpath,'$(TORCH_LIB_PATH)'
+TORCH_LDFLAGS = -L"$(TORCH_LIB_PATH)" -ltorch_cpu -ltorch -lc10  -Wl,--no-as-needed,-rpath,'$$ORIGIN/../../torch/lib' -Wl,-rpath,'$(TORCH_LIB_PATH)'
 
 PKG_CPPFLAGS = -I../inst/include/ -I"$(TORCH_INCLUDE_PATH)"
 
@@ -20,8 +20,8 @@ ifeq ($(UNAME), Darwin)
   # This logic is macOS-specific and finds the C++ standard library headers (like <cmath>)
   SDK_PATH=$(shell xcrun --show-sdk-path)
   PKG_CPPFLAGS += -I"$(SDK_PATH)/usr/include/c++/v1"
+	$(warning --- SDK_PATH: $(SDK_PATH))
 endif
-$(warning --- SDK_PATH: $(SDK_PATH))
 
 # Link against torch
 PKG_LIBS = $(TORCH_LDFLAGS)

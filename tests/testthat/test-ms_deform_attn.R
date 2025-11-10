@@ -1,11 +1,9 @@
 test_that("C++ functions are properly exported", {
   # Test that the functions exist
-  expect_true(exists("ms_deform_attn_forward_wrapper"))
-  expect_true(exists("ms_deform_attn_backward_wrapper"))
+  expect_true(exists("multiscale_deformable_attn"))
 
   # Test that they are callable
-  expect_type(ms_deform_attn_forward_wrapper, "closure")
-  expect_type(ms_deform_attn_backward_wrapper, "closure")
+  expect_type(multiscale_deformable_attn, "closure")
 })
 
 
