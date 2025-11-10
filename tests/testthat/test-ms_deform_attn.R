@@ -26,22 +26,22 @@ test_that("ms_deform_attn_forward works with CPU tensors", {
   })
 
   # Test result type
-  expect_s3_class(result, "torch_tensor")
+  expect_is_tensor(result)
 
-  # Test result dimensions (adjust based on your implementation)
+  # Test result dimensions (adjust based on implementation)
   expect_equal(result$shape, c(1, 10, 1, 64))
 })
 
 test_that("ms_deform_attn_forward works with CUDA tensors", {
   skip_on_cran()
-  skip_if_no_cuda()
+  skip_if_cuda_not_available()
 
   # Create CUDA tensors
-  value <- torch_randn(1, 10, 1, 64)$cuda()
-  spatial_shapes <- torch_tensor(matrix(c(2, 5), nrow = 1, ncol = 2))$cuda()
-  level_start_index <- torch_tensor(c(0L))$cuda()
-  sampling_loc <- torch_randn(1, 10, 1, 1, 2)$cuda()
-  attn_weight <- torch_randn(1, 10, 1, 1)$cuda()
+  value <- torch_randn(1, 10, 1, 64)$to(device="cuda")
+  spatial_shapes <- torch_tensor(matrix(c(2, 5), nrow = 1, ncol = 2))$to(device="cuda")
+  level_start_index <- torch_tensor(c(0L))$to(device="cuda")
+  sampling_loc <- torch_randn(1, 10, 1, 1, 2)$to(device="cuda")
+  attn_weight <- torch_randn(1, 10, 1, 1)$to(device="cuda")
 
   expect_silent({
     result <- ms_deform_attn_forward_wrapper(
@@ -50,8 +50,8 @@ test_that("ms_deform_attn_forward works with CUDA tensors", {
     )
   })
 
-  expect_s3_class(result, "torch_tensor")
-  expect_true(result$is_cuda())
+  expect_is_tensor(result)
+  expect_equal(result$device(), "cuda")
 })
 
 test_that("ms_deform_attn_backward works correctly", {
@@ -78,7 +78,7 @@ test_that("ms_deform_attn_backward works correctly", {
 
   # Test that each element is a tensor
   for (i in seq_along(result)) {
-    expect_s3_class(result[[i]], "torch_tensor")
+    expect_is_tensor(result[[i]])
   }
 })
 

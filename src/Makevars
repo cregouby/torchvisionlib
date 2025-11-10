@@ -28,7 +28,7 @@ PKG_LIBS = $(TORCH_LDFLAGS)
 
 # Define object files
 # .cpp files are compiled by $(CXX)
-CPP_OBJECTS = ms_deform_attn.o ms_deform_attn_autograd.o
+CPP_OBJECTS = ms_deform_attn.o ms_deform_attn_autograd.o exports.o RcppExports.o torchvisionlib_types.o torchvisionlib.o
 
 # Tell Make about all our objects
 OBJECTS = $(CPP_OBJECTS)
