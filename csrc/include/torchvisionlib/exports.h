@@ -27,6 +27,7 @@ extern void* p_torchvisionlib_last_error;
 TORCHVISIONLIB_API void* torchvisionlib_last_error ();
 TORCHVISIONLIB_API void torchvisionlib_last_error_clear();
 
+TORCHVISIONLIB_API void* _multiscale_deformable_attn (const torch::Tensor & value, const torch::Tensor & spatial_shapes, const torch::Tensor & level_start_index, const torch::Tensor & sampling_loc, const torch::Tensor & attn_weight, const int im2col_step);
 TORCHVISIONLIB_API void* _vision_ops_nms (void* dets, void* scores, double iou_threshold);
 TORCHVISIONLIB_API void* _vision_ops_deform_conv2d (void* input, void* weight, void* offset, void* mask, void* bias, std::int64_t stride_h, std::int64_t stride_w, std::int64_t pad_h, std::int64_t pad_w, std::int64_t dilation_h, std::int64_t dilation_w, std::int64_t groups, std::int64_t offset_groups, bool use_mask);
 TORCHVISIONLIB_API void* _vision_ops_ps_roi_align (void* input, void* rois, double spatial_scale, int64_t pooled_height, int64_t pooled_width, int64_t sampling_ratio);
@@ -40,6 +41,11 @@ TORCHVISIONLIB_API void* _tensor_pair_get_first (void* x);
 TORCHVISIONLIB_API void* _tensor_pair_get_second (void* x);
 
 #ifdef RCPP_VERSION
+inline void* multiscale_deformable_attn (const torch::Tensor & value, const torch::Tensor & spatial_shapes, const torch::Tensor & level_start_index, const torch::Tensor & sampling_loc, const torch::Tensor & attn_weight, const int im2col_step) {
+  auto ret =  _multiscale_deformable_attn(value, spatial_shapes, level_start_index, sampling_loc, attn_weight, im2col_step);
+  host_exception_handler();
+  return ret;
+}
 inline void* vision_ops_nms (void* dets, void* scores, double iou_threshold) {
   auto ret =  _vision_ops_nms(dets, scores, iou_threshold);
   host_exception_handler();

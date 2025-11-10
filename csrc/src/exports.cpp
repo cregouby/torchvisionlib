@@ -14,6 +14,13 @@ TORCHVISIONLIB_API void torchvisionlib_last_error_clear()
   p_torchvisionlib_last_error = NULL;
 }
 
+torch::Tensor multiscale_deformable_attn (const torch::Tensor & value, const torch::Tensor & spatial_shapes, const torch::Tensor & level_start_index, const torch::Tensor & sampling_loc, const torch::Tensor & attn_weight, const int im2col_step);
+TORCHVISIONLIB_API void* _multiscale_deformable_attn (const torch::Tensor & value, const torch::Tensor & spatial_shapes, const torch::Tensor & level_start_index, const torch::Tensor & sampling_loc, const torch::Tensor & attn_weight, const int im2col_step) {
+  try {
+    return  make_raw::Tensor(multiscale_deformable_attn(value, spatial_shapes, level_start_index, sampling_loc, attn_weight, im2col_step));
+  } TORCHVISIONLIB_HANDLE_EXCEPTION
+  return (void*) NULL;
+}
 torch::Tensor vision_ops_nms (torch::Tensor dets, torch::Tensor scores, double iou_threshold);
 TORCHVISIONLIB_API void* _vision_ops_nms (void* dets, void* scores, double iou_threshold) {
   try {

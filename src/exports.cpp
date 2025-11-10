@@ -4,6 +4,10 @@
 #include <torchvisionlib/torchvisionlib.h>
 
 // [[Rcpp::export]]
+torch::Tensor rcpp_multiscale_deformable_attn (const torch::Tensor & value, const torch::Tensor & spatial_shapes, const torch::Tensor & level_start_index, const torch::Tensor & sampling_loc, const torch::Tensor & attn_weight, const int im2col_step) {
+  return  multiscale_deformable_attn(value, spatial_shapes, level_start_index, sampling_loc, attn_weight, im2col_step);
+}
+// [[Rcpp::export]]
 torch::Tensor rcpp_vision_ops_nms (torch::Tensor dets, torch::Tensor scores, double iou_threshold) {
   return  vision_ops_nms(dets.get(), scores.get(), iou_threshold);
 }
