@@ -1,6 +1,5 @@
-
-#include "ms_deform_attn_autograd.h"
-#include "ms_deform_attn.h"
+#include <torchvisionlib/ms_deform_attn_autograd.h>
+#include <torchvisionlib/ms_deform_attn.h>
 
 // Autograd function
 torch::Tensor MSDeformAttnFunction::forward(

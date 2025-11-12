@@ -12,7 +12,7 @@ $(warning --- TORCH_LIB_PATH: [$(TORCH_LIB_PATH)])
 
 TORCH_LDFLAGS = -L"$(TORCH_LIB_PATH)" -ltorch_cpu -ltorch -lc10  -Wl,--no-as-needed,-rpath,'$$ORIGIN/../../torch/lib' -Wl,-rpath,'$(TORCH_LIB_PATH)'
 
-PKG_CPPFLAGS = -I../inst/include/ -I"$(TORCH_INCLUDE_PATH)"
+PKG_CPPFLAGS = -I../csrc/include/ -I../inst/include/ -I"$(TORCH_INCLUDE_PATH)"
 
 # Detect the OS
 UNAME := $(shell uname)
@@ -26,12 +26,7 @@ endif
 # Link against torch
 PKG_LIBS = $(TORCH_LDFLAGS)
 
-# Define object files
-# .cpp files are compiled by $(CXX)
-CPP_OBJECTS = ms_deform_attn.o ms_deform_attn_autograd.o exports.o RcppExports.o torchvisionlib_types.o torchvisionlib.o
 
-# Tell Make about all our objects
-OBJECTS = $(CPP_OBJECTS)
 
 # CUDA_HOME must exist as an env var.
 ifneq (,$(CUDA_HOME))
@@ -64,6 +59,8 @@ cuda/%.o: cuda/%.cu
 	@echo "Compiling CUDA file: $<"
 	$(NVCC) $(NVCCFLAGS) $(PKG_CPPFLAGS) -c $< -o $@
 endif
+
+
 
 # C++ files (like ms_deform_attn_R.cpp) are compiled by the default .cpp.o rule
 # We just need to make sure it uses C++17

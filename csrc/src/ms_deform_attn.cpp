@@ -9,7 +9,7 @@
 */
 
 #include <torch/torch.h>
-#include "ms_deform_attn.h"
+#include <torchvisionlib/ms_deform_attn.h>
 
 // Wrapper for forward
 torch::Tensor ms_deform_attn_forward_wrapper(

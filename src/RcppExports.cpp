@@ -11,6 +11,22 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// rcpp_multiscale_deformable_attn
+torch::Tensor rcpp_multiscale_deformable_attn(const torch::Tensor& value, const torch::Tensor& spatial_shapes, const torch::Tensor& level_start_index, const torch::Tensor& sampling_loc, const torch::Tensor& attn_weight, const int im2col_step);
+RcppExport SEXP _torchvisionlib_rcpp_multiscale_deformable_attn(SEXP valueSEXP, SEXP spatial_shapesSEXP, SEXP level_start_indexSEXP, SEXP sampling_locSEXP, SEXP attn_weightSEXP, SEXP im2col_stepSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const torch::Tensor& >::type value(valueSEXP);
+    Rcpp::traits::input_parameter< const torch::Tensor& >::type spatial_shapes(spatial_shapesSEXP);
+    Rcpp::traits::input_parameter< const torch::Tensor& >::type level_start_index(level_start_indexSEXP);
+    Rcpp::traits::input_parameter< const torch::Tensor& >::type sampling_loc(sampling_locSEXP);
+    Rcpp::traits::input_parameter< const torch::Tensor& >::type attn_weight(attn_weightSEXP);
+    Rcpp::traits::input_parameter< const int >::type im2col_step(im2col_stepSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_multiscale_deformable_attn(value, spatial_shapes, level_start_index, sampling_loc, attn_weight, im2col_step));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rcpp_vision_ops_nms
 torch::Tensor rcpp_vision_ops_nms(torch::Tensor dets, torch::Tensor scores, double iou_threshold);
 RcppExport SEXP _torchvisionlib_rcpp_vision_ops_nms(SEXP detsSEXP, SEXP scoresSEXP, SEXP iou_thresholdSEXP) {
@@ -169,6 +185,7 @@ END_RCPP
 RcppExport SEXP multiscale_deformable_attn(SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_torchvisionlib_rcpp_multiscale_deformable_attn", (DL_FUNC) &_torchvisionlib_rcpp_multiscale_deformable_attn, 6},
     {"_torchvisionlib_rcpp_vision_ops_nms", (DL_FUNC) &_torchvisionlib_rcpp_vision_ops_nms, 3},
     {"_torchvisionlib_rcpp_vision_ops_deform_conv2d", (DL_FUNC) &_torchvisionlib_rcpp_vision_ops_deform_conv2d, 14},
     {"_torchvisionlib_rcpp_vision_ops_ps_roi_align", (DL_FUNC) &_torchvisionlib_rcpp_vision_ops_ps_roi_align, 6},
