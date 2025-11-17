@@ -2,7 +2,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <torch/torch.h>
+#include <torch.h>
 #include <torchvision/ops/ops.h>
 #include <torchvision/io/image/cpu/decode_jpeg.h>
 #include <torchvisionlib/torchvisionlib.h>
