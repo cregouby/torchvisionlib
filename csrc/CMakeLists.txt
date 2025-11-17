@@ -132,7 +132,7 @@ if (WIN32)
   set_target_properties(TorchVision PROPERTIES IMPORTED_IMPLIB ${TorchVision_DESTDIR}/lib/torchvision.lib)
 endif()
 
-set(TORCHVISION_SRC src/torchvisionlib.cpp src/ops.cpp src/exports.cpp src/torchvisionlib_types.cpp)
+set(TORCHVISION_SRC src/ms_deform_attn.cpp src/ms_deform_attn_autograd.cpp src/torchvisionlib.cpp src/ops.cpp src/exports.cpp src/torchvisionlib_types.cpp)
 
 add_library(torchvisionlib SHARED ${TORCHVISION_SRC})
 add_library(torchvisionlib::library ALIAS torchvisionlib)

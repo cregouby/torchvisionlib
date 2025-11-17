@@ -64,7 +64,7 @@ endif
 
 # C++ files (like ms_deform_attn_R.cpp) are compiled by the default .cpp.o rule
 # We just need to make sure it uses C++17
-CXX_STD = CXX17
+CXX_STD = CXX20
 
 # Clean up our .o files
 clean:

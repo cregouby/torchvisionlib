@@ -3,7 +3,6 @@
 #define MS_DEFORM_ATTN_AUTOGRAD_H
 
 #pragma once
-
 #include <torch/torch.h>
 
 // Declaration of the autograd function

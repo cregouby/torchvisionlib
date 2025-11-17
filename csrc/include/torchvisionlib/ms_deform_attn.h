@@ -7,7 +7,6 @@
  * Modified from https://github.com/fundamentalvision/Deformable-DETR/tree/main/models/ops
  **************************************************************************************************
  */
-#include <torch/torch.h>
 #include <stdexcept>
 #include <vector>
 #include "cpu/ms_deform_attn_cpu.h"
