@@ -8,7 +8,7 @@
 **************************************************************************************************
 */
 
-#include <torch/csrc/api/include/torch/torch.h>
+#include <torch/torch.h>
 #include <torchvisionlib/ms_deform_attn.h>
 
 // Wrapper for forward

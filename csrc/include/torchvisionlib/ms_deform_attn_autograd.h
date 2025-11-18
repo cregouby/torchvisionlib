@@ -3,7 +3,7 @@
 #define MS_DEFORM_ATTN_AUTOGRAD_H
 
 #pragma once
-#include <torch.h>
+#include <torch/torch.h>
 
 // Declaration of the autograd function
 struct MSDeformAttnFunction : torch::autograd::Function<MSDeformAttnFunction> {

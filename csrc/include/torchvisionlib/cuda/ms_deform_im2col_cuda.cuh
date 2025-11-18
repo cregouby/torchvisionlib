@@ -13,7 +13,7 @@
 #include <algorithm>
 #include <cstring>
 
-#include <torch.h>
+#include <torch/torch.h>
 #include <ATen/cuda/CUDAContext.h>
 
 #include <THC/THCAtomics.cuh>
