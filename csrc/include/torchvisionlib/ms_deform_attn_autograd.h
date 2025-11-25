@@ -1,9 +1,8 @@
+#pragma once
+#include <torch/torch.h>
 
 #ifndef MS_DEFORM_ATTN_AUTOGRAD_H
 #define MS_DEFORM_ATTN_AUTOGRAD_H
-
-#pragma once
-#include <torch.h>
 
 // Declaration of the autograd function
 struct MSDeformAttnFunction : torch::autograd::Function<MSDeformAttnFunction> {

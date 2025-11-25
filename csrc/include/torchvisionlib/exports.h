@@ -41,7 +41,7 @@ TORCHVISIONLIB_API void* _tensor_pair_get_first (void* x);
 TORCHVISIONLIB_API void* _tensor_pair_get_second (void* x);
 
 #ifdef RCPP_VERSION
-inline void* multiscale_deformable_attn (const torch::Tensor & value, const torch::Tensor & spatial_shapes, const torch::Tensor & level_start_index, const torch::Tensor & sampling_loc, const torch::Tensor & attn_weight, const int im2col_step) {
+inline torch::Tensor multiscale_deformable_attn (const torch::Tensor & value, const torch::Tensor & spatial_shapes, const torch::Tensor & level_start_index, const torch::Tensor & sampling_loc, const torch::Tensor & attn_weight, const int im2col_step) {
   auto ret =  _multiscale_deformable_attn(value, spatial_shapes, level_start_index, sampling_loc, attn_weight, im2col_step);
   host_exception_handler();
   return ret;
@@ -89,7 +89,7 @@ inline void* vision_read_jpeg_float (void* fpath) {
 inline void delete_tensor_pair (void* x) {
    _delete_tensor_pair(x);
   host_exception_handler();
-  
+
 }
 inline void* tensor_pair_get_first (void* x) {
   auto ret =  _tensor_pair_get_first(x);

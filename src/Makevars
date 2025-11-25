@@ -20,7 +20,7 @@ ifeq ($(UNAME), Darwin)
   # This logic is macOS-specific and finds the C++ standard library headers (like <cmath>)
   SDK_PATH=$(shell xcrun --show-sdk-path)
   PKG_CPPFLAGS += -I"$(SDK_PATH)/usr/include/c++/v1"
-	$(warning --- SDK_PATH: $(SDK_PATH))
+  $(warning --- SDK_PATH: $(SDK_PATH))
 endif
 
 # Link against torch
