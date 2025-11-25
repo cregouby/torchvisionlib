@@ -1,5 +1,5 @@
 #pragma once
-#include <torch.h>
+#include <torch/torch.h>
 
 namespace torchvisionlib {
 

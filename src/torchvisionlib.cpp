@@ -4,7 +4,6 @@
 #include <torchvisionlib/torchvisionlib.h>
 #define TORCH_IMPL
 #define IMPORT_TORCH
-#include <torch.h>
 
 void host_exception_handler ()
 {

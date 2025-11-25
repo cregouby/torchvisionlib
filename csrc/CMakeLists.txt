@@ -144,11 +144,11 @@ target_include_directories(torchvisionlib PUBLIC
 )
 
 set(TORCHVISIONLIB_HEADERS
-    include/torchvisionlib/ms_deform_attn.h
-    include/torchvisionlib/ms_deform_attn_autograd.h
     include/torchvisionlib/torchvisionlib.h
     include/torchvisionlib/exports.h
     include/torchvisionlib/torchvisionlib_types.h
+    include/torchvisionlib/ms_deform_attn.h
+    include/torchvisionlib/ms_deform_attn_autograd.h
 )
 set_property(TARGET torchvisionlib
  PROPERTY PUBLIC_HEADER ${TORCHVISIONLIB_HEADERS}

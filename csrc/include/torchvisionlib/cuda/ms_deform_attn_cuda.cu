@@ -8,7 +8,7 @@
 **************************************************************************************************
 */
 
-#include <torch.h>
+#include <torch/torch.h>
 #include <vector>
 #include "../ms_deform_attn.h"
 #include "ms_deform_attn_cuda.h"
