@@ -22,16 +22,18 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {runner: macOS-13,             r_version: release, os: macOS}
+          - {runner: macOS-15-intel,       r_version: release, os: macOS}
           - {runner: [self-hosted, m1],    r_version: '',      os: macOS}
-          - {runner: windows-2019,         r_version: release, os: windows}
+          - {runner: windows-2022,         r_version: release, os: windows}
           - {runner: ubuntu-latest,        r_version: release, os: ubuntu}
-          - {runner: [self-hosted, linux], r_version: release, os: ubuntu, cuda: 11.8, cuda_patch: 0}
-          - {runner: windows-2019,         r_version: release, os: windows, cuda: 11.8, cuda_patch: 0}
+          - {runner: [self-hosted, linux], r_version: release, os: ubuntu, cuda: 12.6, cuda_patch: 3}
+          - {runner: windows-2022,         r_version: release, os: windows, cuda: 12.6, cuda_patch: 3}
+          - {runner: [self-hosted, linux], r_version: release, os: ubuntu, cuda: 12.8, cuda_patch: 1}
+          - {runner: windows-2022,         r_version: release, os: windows, cuda: 12.8, cuda_patch: 1}
 
         include:
           - config: {os: ubuntu}
-            container: ubuntu:20.04
+            container: ubuntu:22.04
 
     env:
       TORCH_INSTALL: 1
@@ -63,7 +65,7 @@ jobs:
           cmake-version: '3.31'
 
       - if: ${{matrix.config.cuda != ''}}
-        uses: Jimver/cuda-toolkit@v0.2.21
+        uses: Jimver/cuda-toolkit@v0.2.29
         id: cuda-toolkit
         with:
           cuda: '${{matrix.config.cuda}}.${{matrix.config.cuda_patch}}'
@@ -90,8 +92,8 @@ jobs:
         run: |
           version=$(Rscript -e "cat(as.character(desc::desc_get_version()))")
           fname=$(Rscript -e "cat(list.files('csrc/build/', '*.zip'))")
-          echo "::set-output name=version::$version"
-          echo "::set-output name=fname::$fname"
+          echo "version=$version" >> $GITHUB_OUTPUT
+          echo "fname=$fname" >> $GITHUB_OUTPUT
 
       - uses: svenstaro/upload-release-action@v2
         if: github.ref_name == 'main'
@@ -117,10 +119,10 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: mac,     runner: macOS-13,   r: 'release', artifact: '+cpu+x86_64-Darwin.zip'}
+          - {os: mac,     runner: macOS-15-intel,   r: 'release', artifact: '+cpu+x86_64-Darwin.zip'}
           - {os: m1mac,   runner: ['self-hosted', 'm1'], artifact: '+cpu+arm64-Darwin.zip'}
           - {os: windows, runner: windows-latest, r: 'release', rtools: '42', artifact: '+cpu-win64.zip'}
-          - {os: ubuntu,  runner: ubuntu-20.04,   r: 'release', artifact: '+cpu-Linux.zip'}
+          - {os: ubuntu,  runner: ubuntu-22.04,   r: 'release', artifact: '+cpu-Linux.zip'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -154,7 +156,7 @@ jobs:
         id: version
         run: |
           version=$(Rscript -e "cat(as.character(desc::desc_get_version()))")
-          echo "::set-output name=version::$version"
+          echo "version=$version" >> $GITHUB_OUTPUT
 
       - uses: actions/download-artifact@v4
         with:
