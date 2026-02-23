@@ -1,5 +1,5 @@
-project(torchvisionlib)
 cmake_minimum_required(VERSION 3.21)
+project(torchvisionlib)
 
 # accommodate differing conventions
 include(GNUInstallDirs)
@@ -103,14 +103,31 @@ else()
 endif()
 
 message(STATUS "CMAKE_ARGS: ${TORCHVISION_CMAKE_ARGS}")
-ExternalProject_Add(TorchVision-project
-  GIT_REPOSITORY https://github.com/pytorch/vision
-  GIT_TAG v0.20.1
-  DEPENDS ${TORCHVISION_DEPENDS}
-  CMAKE_CACHE_ARGS ${TORCHVISION_CMAKE_ARGS}
-  PREFIX "${CMAKE_CURRENT_BINARY_DIR}/libtorchvision"
-  PATCH_COMMAND ${PATCH_CMD}
-)
+
+# Check if we should use a local torchvision source tree
+if(USE_LOCAL_TORCHVISION AND TORCHVISION_SOURCE_DIR)
+  message(STATUS "Using local torchvision source: ${TORCHVISION_SOURCE_DIR}")
+  ExternalProject_Add(TorchVision-project
+    SOURCE_DIR ${TORCHVISION_SOURCE_DIR}
+    DEPENDS ${TORCHVISION_DEPENDS}
+    CMAKE_CACHE_ARGS ${TORCHVISION_CMAKE_ARGS}
+    PREFIX "${CMAKE_CURRENT_BINARY_DIR}/libtorchvision"
+    PATCH_COMMAND ${PATCH_CMD}
+    # Skip download/update steps since we're using a local source
+    DOWNLOAD_COMMAND ""
+    UPDATE_COMMAND ""
+  )
+else()
+  message(STATUS "Downloading torchvision from GitHub")
+  ExternalProject_Add(TorchVision-project
+    GIT_REPOSITORY https://github.com/pytorch/vision
+    GIT_TAG v0.22.1
+    DEPENDS ${TORCHVISION_DEPENDS}
+    CMAKE_CACHE_ARGS ${TORCHVISION_CMAKE_ARGS}
+    PREFIX "${CMAKE_CURRENT_BINARY_DIR}/libtorchvision"
+    PATCH_COMMAND ${PATCH_CMD}
+  )
+endif()
 
 SET(TORCHVISION_INCLUDE_DIR ${TorchVision_DESTDIR}/include)
 SET(TORCHVISION_LIB_DIR ${TorchVision_DESTDIR}/${CMAKE_INSTALL_LIBDIR})
