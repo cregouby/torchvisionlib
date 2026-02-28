@@ -1,37 +1,106 @@
 ## usethis namespace: start
+#' @useDynLib torchvisionlib, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 #' @importFrom utils download.file packageDescription unzip
 ## usethis namespace: end
 NULL
 
-.onLoad <- function(lib, pkg) {
-  if (torch::torch_is_installed()) {
+# Store original LD_LIBRARY_PATH for potential cleanup
+.original_ld_library_path <- NULL
 
-    if (!torchvisionlib_is_installed())
-      install_torchvisionlib()
+#' Set library search paths at runtime
+#'
+#' This sets LD_LIBRARY_PATH (Linux) or DYLD_FALLBACK_LIBRARY_PATH (macOS)
+#' to ensure the dynamic linker can find our dependent libraries.
+#'
+#' @keywords internal
+.set_library_search_path <- function() {
+  pkg_libs <- system.file("libs", package = "torchvisionlib")
+  torch_libs <- tryCatch(
+    system.file("lib", package = "torch"),
+    error = function(e) ""
+  )
 
-    if (!torchvisionlib_is_installed()) {
-      if (interactive())
-        warning("torchvisionlib is not installed. Run `intall_torchvisionlib()` before using the package.")
+  paths <- character(0)
+  if (nzchar(pkg_libs) && dir.exists(pkg_libs)) {
+    paths <- c(paths, pkg_libs)
+  }
+  if (nzchar(torch_libs) && dir.exists(torch_libs)) {
+    paths <- c(paths, torch_libs)
+  }
+
+  if (length(paths) == 0) return(invisible(FALSE))
+
+  new_paths <- paste(paths, collapse = ":")
+
+  # Set for Linux
+  current <- Sys.getenv("LD_LIBRARY_PATH")
+  if (!nzchar(current) || !any(sapply(paths, function(p) grepl(p, current, fixed = TRUE)))) {
+    .original_ld_library_path <<- current
+    if (nzchar(current)) {
+      Sys.setenv(LD_LIBRARY_PATH = paste(new_paths, current, sep = ":"))
     } else {
-      if (grepl("mingw", R.version[["os"]])) {
-        libpath <- lib_path("torchvisionlib")
-        withr::with_dir(dirname(libpath), {
-          dyn.load(basename(libpath), local = FALSE)
-        })
-      } else {
-        dyn.load(lib_path("torchvision"), local = FALSE)
-        dyn.load(lib_path("torchvisionlib"), local = FALSE)
-      }
-
-      # when using devtools::load_all() the library might be available in
-      # `lib/pkg/src`
-      pkgload <- file.path(lib, pkg, "src", paste0(pkg, .Platform$dynlib.ext))
-      if (file.exists(pkgload))
-        dyn.load(pkgload)
-      else
-        library.dynam("torchvisionlib", pkg, lib)
+      Sys.setenv(LD_LIBRARY_PATH = new_paths)
     }
+  }
+
+  # Set for macOS
+  if (Sys.info()["sysname"] == "Darwin") {
+    current_dyld <- Sys.getenv("DYLD_FALLBACK_LIBRARY_PATH")
+    if (!nzchar(current_dyld) || !any(sapply(paths, function(p) grepl(p, current_dyld, fixed = TRUE)))) {
+      if (nzchar(current_dyld)) {
+        Sys.setenv(DYLD_FALLBACK_LIBRARY_PATH = paste(new_paths, current_dyld, sep = ":"))
+      } else {
+        Sys.setenv(DYLD_FALLBACK_LIBRARY_PATH = new_paths)
+      }
+    }
+  }
+
+  invisible(TRUE)
+}
+
+.onLoad <- function(lib, pkg) {
+  # Set library search paths FIRST (before any library loading)
+  .set_library_search_path()
+
+  torch_available <- tryCatch({
+    requireNamespace("torch", quietly = TRUE) &&
+      torch::torch_is_installed()
+  }, error = function(e) FALSE)
+
+  if (!torch_available) {
+    stop("Note: torch package detection returned FALSE")
+  }
+
+  if (!torchvisionlib_is_installed())
+    install_torchvisionlib()
+
+  if (!torchvisionlib_is_installed()) {
+    if (interactive())
+      warning("torchvisionlib is not installed. Run `install_torchvisionlib()` before using the package.")
+  } else {
+    if (grepl("mingw", R.version[["os"]])) {
+      lib_file <- lib_path("torchvisionlib")
+      withr::with_dir(dirname(lib_file), {
+        dyn.load(basename(lib_file), local = FALSE)
+      })
+    } else {
+      # On Unix, load dependencies first if they exist as separate files
+      tv_path <- lib_path("torchvision")
+      if (file.exists(tv_path)) {
+        dyn.load(tv_path, local = FALSE)
+      }
+      # Then load the main package library
+      dyn.load(lib_path("torchvisionlib"), local = FALSE)
+    }
+
+    # when using devtools::load_all() the library might be available in
+    # `lib/pkg/src`
+    pkgload <- file.path(lib, pkg, "src", paste0(pkg, .Platform$dynlib.ext))
+    if (file.exists(pkgload))
+      dyn.load(pkgload)
+    else
+      library.dynam("torchvisionlib", pkg, lib)
   }
 }
 
@@ -44,17 +113,36 @@ inst_path <- function() {
 
 lib_path <- function(name = "torchvisionlib") {
   install_path <- inst_path()
+  ext <- lib_ext()
 
-  if (.Platform$OS.type == "unix") {
-    if (file.exists(file.path(install_path, "lib64"))) {
-      file.path(install_path, "lib64", paste0("lib", name, lib_ext()))
-    } else {
-      file.path(install_path, "lib", paste0("lib", name, lib_ext()))
+  # R convention: shared libraries go in 'libs/' on all platforms
+  lib_dir <- file.path(install_path, "libs")
+
+  # On Unix, R may use lib64/ for 64-bit libs, but for packages we stick to libs/
+  if (.Platform$OS.type == "unix" && !dir.exists(lib_dir)) {
+    # Fallback for edge cases
+    if (dir.exists(file.path(install_path, "lib64"))) {
+      lib_dir <- file.path(install_path, "lib64")
+    } else if (dir.exists(file.path(install_path, "lib"))) {
+      lib_dir <- file.path(install_path, "lib")
     }
+  }
+
+  # Windows uses bin/ for DLLs
+  if (.Platform$OS.type == "windows") {
+    lib_dir <- file.path(install_path, "bin")
+  }
+
+  # Build the filename: R adds 'lib' prefix on Unix automatically for system libs,
+  # but for package libs we use the exact name (e.g., "torchvisionlib.so")
+  if (.Platform$OS.type == "unix") {
+    # we expect files named exactly as target: libtorchvisionlib.so
+    file.path(lib_dir, paste0("lib", name, ext))
   } else {
-    file.path(install_path, "bin", paste0(name, lib_ext()))
+    file.path(lib_dir, paste0(name, ext))
   }
 }
+
 
 lib_ext <- function() {
   if (grepl("darwin", version$os))
@@ -69,7 +157,7 @@ lib_ext <- function() {
 #' @rdname install_torchvisionlib
 #' @export
 torchvisionlib_is_installed <- function() {
-  file.exists(lib_path())
+  file.exists(lib_path("torchvisionlib"))
 }
 
 #' Install additional libraries

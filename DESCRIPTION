@@ -8,10 +8,11 @@ Authors@R: c(
 Description: Implements additional operators for computer vision models, including
     operators necessary for image segmentation and object detection deep learning
     models.
+Type: Package
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.6)
 LinkingTo: 
@@ -19,7 +20,7 @@ LinkingTo:
     torch
 Imports: 
     Rcpp,
-    torch (>= 0.14.0),
+    torch (>= 0.16.0),
     rlang,
     glue,
     withr
