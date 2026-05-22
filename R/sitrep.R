@@ -31,7 +31,7 @@ torchvisionlib_sitrep <- function() {
   # Format file size
   fmt_size <- function(bytes) {
     if (is.null(bytes) || is.na(bytes)) return("unknown")
-    structure(bytes, class = "object_size") |> format("MB")
+    structure(bytes, class = "object_size") %>%format("MB")
   }
 
   # Track issues
@@ -712,7 +712,7 @@ torchvisionlib_sitrep <- function() {
       out <- suppressWarnings(
         system2(
           R.home("bin/R"),
-          c("--vanilla", "--slave", "-e", load_test_code),
+          c("--vanilla", "--slave", load_test_code),
           stdout = TRUE, stderr = TRUE, timeout = 30
         )
       )

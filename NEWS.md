@@ -1,4 +1,4 @@
-# torchvisionlib (development version)
+# torchvisionlib 0.7.0
 
 # torchvisionlib 0.5.0
 
