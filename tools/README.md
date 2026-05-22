@@ -3,16 +3,15 @@
 # Package folder organization
 
 1. The package’s build system – what the files mean
-Directory /File   	What it does
-src/Makevars 	Very small – only sets PKG_CPPFLAGS and PKG_LIBS. The heavy lifting is not done here.
-csrc/CMakeLists.txt 	Full CMake project that 
-  (a) finds the torch installation, 
-  (b) builds the external library libtorchvision.so (by cloning pytorch/vision), 
-  (c) builds the wrapper library torchvisionlib (the one that contains the R‑cpp exported symbols), 
-  (d) installs the results into the R package’s inst/ directory.
-R/ 	Pure‑R code – the .onLoad() routine that loads the two shared objects (libtorchvision.so and torchvisionlib.so).
-src/ 	Only contains a few tiny C++ files (ops.cpp, exports.cpp, …) that are linked into torchvisionlib.so by CMake. They are not compiled by the default Makefile.
-inst/ 	Destination where CMake copies the compiled libraries. At install time the files end up in the user library, e.g. ~/R/x86_64‑pc‑linux‑gnu‑library/4.5/torchvisionlib/libs/.
+
+| Directory / File      | What it does                                                                                                                                                                                                                                                                                                    |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/Makevars`        | Very small – only sets `PKG_CPPFLAGS` and `PKG_LIBS`. The heavy lifting is not done here.                                                                                                                                                                                                                       |
+| `csrc/CMakeLists.txt` | Full CMake project that (a) finds the torch installation, (b) builds the external library `libtorchvision.so` (by cloning pytorch/vision), (c) builds the wrapper library `torchvisionlib` (the one that contains the R‑cpp exported symbols), (d) installs the results into the R package’s `inst/` directory. |
+| `R/`                  | Pure‑R code – the `.onLoad()` routine that loads the two shared objects (`libtorchvision.so` and `torchvisionlib.so`).                                                                                                                                                                                          |
+| `src/`                | Only contains a few tiny C++ files (`ops.cpp`, `exports.cpp`, …) that are linked into `torchvisionlib.so` by CMake. They are not compiled by the default Makefile.                                                                                                                                              |
+| `inst/`               | Destination where CMake copies the compiled libraries. At install time the files end up in the user library, e.g. `~/R/x86_64‑pc‑linux‑gnu‑library/4.5/torchvisionlib/libs/`.                                                                                                                                   |
+
 
 # --------------- daily rebuild all
 
