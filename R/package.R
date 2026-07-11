@@ -12,7 +12,7 @@ NULL
 
     if (!torchvisionlib_is_installed()) {
       if (interactive())
-        warning("torchvisionlib is not installed. Run `intall_torchvisionlib()` before using the package.")
+        warning("torchvisionlib is not installed. Run `install_torchvisionlib()` before using the package.")
     } else {
       if (grepl("mingw", R.version[["os"]])) {
         libpath <- lib_path("torchvisionlib")
@@ -42,7 +42,7 @@ inst_path <- function() {
   system.file("", package = "torchvisionlib")
 }
 
-lib_path <- function(name = "torchvisionlib") {
+lib_path <- function(name = "torchvision") {
   install_path <- inst_path()
 
   if (.Platform$OS.type == "unix") {

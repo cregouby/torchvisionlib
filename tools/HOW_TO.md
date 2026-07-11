@@ -5,7 +5,7 @@
 1. The package’s build system – what the files mean
 
 | Directory / File      | What it does                                                                                                                                                                                                                                                                                                    |
-| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ------| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `src/Makevars`        | Very small – only sets `PKG_CPPFLAGS` and `PKG_LIBS`. The heavy lifting is not done here.                                                                                                                                                                                                                       |
 | `csrc/CMakeLists.txt` | Full CMake project that (a) finds the torch installation, (b) builds the external library `libtorchvision.so` (by cloning pytorch/vision), (c) builds the wrapper library `torchvisionlib` (the one that contains the R‑cpp exported symbols), (d) installs the results into the R package’s `inst/` directory. |
 | `R/`                  | Pure‑R code – the `.onLoad()` routine that loads the two shared objects (`libtorchvision.so` and `torchvisionlib.so`).                                                                                                                                                                                          |
@@ -13,25 +13,25 @@
 | `inst/`               | Destination where CMake copies the compiled libraries. At install time the files end up in the user library, e.g. `~/R/x86_64‑pc‑linux‑gnu‑library/4.5/torchvisionlib/libs/`.                                                                                                                                   |
 
 
-# --------------- daily rebuild all
+# daily rebuild all
 
 ## How to work on the package 
 Action 	Command
-Add a new C++ function (e.g. a new ops_… implementation) 	
+Add a new C++ function (e.g. a new ops_… implementation)\ 	
   1) Add the source file to csrc/src/ (or modify an existing one). <br>
-  2) Ensure it is **listed in the variable TORCHVISION_SRC** inside csrc/CMakeLists.txt @153.
-  3) Run Rcpp::compileAttributes() (or ./tools/build_and_install.sh which does it automatically).
-Re‑compile after a change 	
-  ./tools/build_and_install.sh – the script cleans the CMake build directory and rebuilds everything, then reinstalls the R package.
-Run the full test suite 	
-  devtools::test() or Rscript -e "devtools::test()".
-Debug a missing symbol 	
-  After reinstall, check the exported symbols: <br> `nm -D $(Rscript -e "cat(file.path(system.file('libs', package='torchvisionlib'), 'torchvisionlib.so'))")
+  2) Ensure it is **listed in the variable TORCHVISION_SRC** inside csrc/CMakeLists.txt @153.\
+  3) Run Rcpp::compileAttributes() (or ./tools/build_and_install.sh which does it automatically).\
+Re‑compile after a change\ 	
+  ./tools/build_and_install.sh – the script cleans the CMake build directory and rebuilds everything, then reinstalls the R package.\
+Run the full test suite\ 	
+  devtools::test() or Rscript -e "devtools::test()".\
+Debug a missing symbol\ 	
+  After reinstall, check the exported symbols: <br> `nm -D $(Rscript -e "cat(file.path(system.file('libs', package='torchvisionlib'), 'torchvisionlib.so'))")\
 
 ##  TL;DR – short version
 ```bash
-# From the root of the package (where DESCRIPTION lives)
 cd torchvisionlib
+# From the root of the package (where DESCRIPTION lives)
 
 # 1) Run the helper script (creates both .so files and installs the package)
 ./tools/build_and_install.sh
@@ -44,7 +44,7 @@ R
 
 After those two commands the missing symbol error disappears, the nn_ps_roi_align operator is usable, and the unit test you wrote passes.
 
-# ---------------  setup_build_env.sh (rebuild torchvisionlib only) (obsolete) 
+#  setup_build_env.sh (rebuild torchvisionlib only) (obsolete) 
 
 This script sets up the necessary environment variables for compiling the torchvisionlib R package when using the simplified `src/Makevars`.
 
@@ -87,9 +87,9 @@ source tools/setup_build_env.sh
 - `CXX_STD` - C++ standard (CXX20)
 - `NVCC`, `NVCCFLAGS`, `OBJECTS` - CUDA-specific (if CUDA_HOME is set)
 
-# ---- Complete initial workflow including libtorchvision.so building ----------------------- 
+# ---- Complete initial workflow including libtorchvision.so building --------
 
-Needed at eact new version of libtorch, to compile the /vision C++ part of the lib.
+Needed at each new version of libtorch, to compile the /vision C++ part of the lib.
 
 
 Below is a complete, step‑by‑step guide for producing the missing libtorchvision.so (or libtorchvision.dylib on macOS) that the R package torchvisionlib needs.
@@ -136,7 +136,7 @@ git clone https://github.com/pytorch/vision.git
 cd vision
 # Optional – checkout a tag that matches the libtorch version you have.
 # For example, if the torch R package uses libtorch 2.7.1:
-git checkout v0.22   # (v0.22.x corresponds to libtorch 2.7.1)
+git checkout v0.23.0   # (v0.23.0 corresponds to libtorch 2.8.0 matching {torch} 0.18.0)
 ```
 > Why a tag?
 > libtorch and torchvision must be binary compatible. The 
