@@ -2,46 +2,46 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 rcpp_vision_ops_nms <- function(dets, scores, iou_threshold) {
-    .Call(`_torchvisionlib_rcpp_vision_ops_nms`, dets, scores, iou_threshold)
+    .Call('_torchvisionlib_rcpp_vision_ops_nms', PACKAGE = 'torchvisionlib', dets, scores, iou_threshold)
 }
 
 rcpp_vision_ops_deform_conv2d <- function(input, weight, offset, mask, bias, stride_h, stride_w, pad_h, pad_w, dilation_h, dilation_w, groups, offset_groups, use_mask) {
-    .Call(`_torchvisionlib_rcpp_vision_ops_deform_conv2d`, input, weight, offset, mask, bias, stride_h, stride_w, pad_h, pad_w, dilation_h, dilation_w, groups, offset_groups, use_mask)
+    .Call('_torchvisionlib_rcpp_vision_ops_deform_conv2d', PACKAGE = 'torchvisionlib', input, weight, offset, mask, bias, stride_h, stride_w, pad_h, pad_w, dilation_h, dilation_w, groups, offset_groups, use_mask)
 }
 
 rcpp_vision_ops_ps_roi_align <- function(input, rois, spatial_scale, pooled_height, pooled_width, sampling_ratio) {
-    .Call(`_torchvisionlib_rcpp_vision_ops_ps_roi_align`, input, rois, spatial_scale, pooled_height, pooled_width, sampling_ratio)
+    .Call('_torchvisionlib_rcpp_vision_ops_ps_roi_align', PACKAGE = 'torchvisionlib', input, rois, spatial_scale, pooled_height, pooled_width, sampling_ratio)
 }
 
 rcpp_vision_ops_ps_roi_pool <- function(input, rois, spatial_scale, pooled_height, pooled_width) {
-    .Call(`_torchvisionlib_rcpp_vision_ops_ps_roi_pool`, input, rois, spatial_scale, pooled_height, pooled_width)
+    .Call('_torchvisionlib_rcpp_vision_ops_ps_roi_pool', PACKAGE = 'torchvisionlib', input, rois, spatial_scale, pooled_height, pooled_width)
 }
 
 rcpp_vision_ops_roi_align <- function(input, rois, spatial_scale, pooled_height, pooled_width, sampling_ratio, aligned) {
-    .Call(`_torchvisionlib_rcpp_vision_ops_roi_align`, input, rois, spatial_scale, pooled_height, pooled_width, sampling_ratio, aligned)
+    .Call('_torchvisionlib_rcpp_vision_ops_roi_align', PACKAGE = 'torchvisionlib', input, rois, spatial_scale, pooled_height, pooled_width, sampling_ratio, aligned)
 }
 
 rcpp_vision_ops_roi_pool <- function(input, rois, spatial_scale, pooled_height, pooled_width) {
-    .Call(`_torchvisionlib_rcpp_vision_ops_roi_pool`, input, rois, spatial_scale, pooled_height, pooled_width)
+    .Call('_torchvisionlib_rcpp_vision_ops_roi_pool', PACKAGE = 'torchvisionlib', input, rois, spatial_scale, pooled_height, pooled_width)
 }
 
 rcpp_vision_read_jpeg <- function(fpath) {
-    .Call(`_torchvisionlib_rcpp_vision_read_jpeg`, fpath)
+    .Call('_torchvisionlib_rcpp_vision_read_jpeg', PACKAGE = 'torchvisionlib', fpath)
 }
 
 rcpp_vision_read_jpeg_float <- function(fpath) {
-    .Call(`_torchvisionlib_rcpp_vision_read_jpeg_float`, fpath)
+    .Call('_torchvisionlib_rcpp_vision_read_jpeg_float', PACKAGE = 'torchvisionlib', fpath)
 }
 
 rcpp_delete_tensor_pair <- function(x) {
-    invisible(.Call(`_torchvisionlib_rcpp_delete_tensor_pair`, x))
+    invisible(.Call('_torchvisionlib_rcpp_delete_tensor_pair', PACKAGE = 'torchvisionlib', x))
 }
 
 rcpp_tensor_pair_get_first <- function(x) {
-    .Call(`_torchvisionlib_rcpp_tensor_pair_get_first`, x)
+    .Call('_torchvisionlib_rcpp_tensor_pair_get_first', PACKAGE = 'torchvisionlib', x)
 }
 
 rcpp_tensor_pair_get_second <- function(x) {
-    .Call(`_torchvisionlib_rcpp_tensor_pair_get_second`, x)
+    .Call('_torchvisionlib_rcpp_tensor_pair_get_second', PACKAGE = 'torchvisionlib', x)
 }
 
