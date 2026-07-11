@@ -42,7 +42,7 @@ inst_path <- function() {
   system.file("", package = "torchvisionlib")
 }
 
-lib_path <- function(name = "torchvision") {
+lib_path <- function(name = "torchvisionlib") {
   install_path <- inst_path()
 
   if (.Platform$OS.type == "unix") {

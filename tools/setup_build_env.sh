@@ -47,6 +47,32 @@ else
 fi
 
 echo ""
+echo "Locating libtorchvision..."
+
+# Priority order: inst/libs > src > cache
+TORCHVISION_LIB_PATH=""
+PKG_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+
+if [[ -f "${PKG_ROOT}/inst/libs/libtorchvision.so" ]]; then
+    TORCHVISION_LIB_PATH="${PKG_ROOT}/inst/libs"
+    echo "    ✓ Found libtorchvision in inst/libs/"
+elif [[ -f "${PKG_ROOT}/src/libtorchvision.so" ]]; then
+    TORCHVISION_LIB_PATH="${PKG_ROOT}/src"
+    echo "    ✓ Found libtorchvision in src/ (will copy to inst/libs during configure)"
+elif [[ -f "${TORCHVISION_CACHE}/build/lib/libtorchvision.so" ]]; then
+    TORCHVISION_LIB_PATH="${TORCHVISION_CACHE}/build/lib"
+    echo "    ✓ Found libtorchvision in cache/"
+else
+    echo "    ⚠ WARNING: libtorchvision.so not found anywhere"
+    echo "      Run: bash tools/build_libtorchvision_only.sh"
+fi
+
+# Export for child processes (Makevars, R scripts)
+export TORCHVISION_LIB_PATH
+echo "    TORCHVISION_LIB_PATH=${TORCHVISION_LIB_PATH:-<not set>}"
+
+
+echo ""
 echo "Environment variables set successfully!"
 echo "You can now build with: R CMD build . && R CMD INSTALL ."
 echo "Or with devtools: Rscript -e 'devtools::install()'"
