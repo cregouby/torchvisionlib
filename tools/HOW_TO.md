@@ -1,6 +1,6 @@
-# Build torchvisionlib
+# Build {torchvisionlib}
 
-# Package folder organization
+## Package folder organization
 
 1. The package’s build system – what the files mean
 
@@ -32,7 +32,6 @@ Debug a missing symbol\
 ```bash
 cd torchvisionlib
 # From the root of the package (where DESCRIPTION lives)
-
 # 1) Run the helper script (creates both .so files and installs the package)
 ./tools/build_and_install.sh
 
@@ -44,7 +43,8 @@ R
 
 After those two commands the missing symbol error disappears, the nn_ps_roi_align operator is usable, and the unit test you wrote passes.
 
-#  setup_build_env.sh (rebuild torchvisionlib only) (obsolete) 
+##  setup_build_env.sh (rebuild torchvisionlib only) (obsolete) 
+
 
 This script sets up the necessary environment variables for compiling the torchvisionlib R package when using the simplified `src/Makevars`.
 
@@ -87,9 +87,7 @@ source tools/setup_build_env.sh
 - `CXX_STD` - C++ standard (CXX20)
 - `NVCC`, `NVCCFLAGS`, `OBJECTS` - CUDA-specific (if CUDA_HOME is set)
 
-# ---- Complete initial workflow including libtorchvision.so building --------
-
-Needed at each new version of libtorch, to compile the /vision C++ part of the lib.
+Needed at eact new version of libtorch, to compile the /vision C++ part of the lib.
 
 
 Below is a complete, step‑by‑step guide for producing the missing libtorchvision.so (or libtorchvision.dylib on macOS) that the R package torchvisionlib needs.
@@ -136,7 +134,11 @@ git clone https://github.com/pytorch/vision.git
 cd vision
 # Optional – checkout a tag that matches the libtorch version you have.
 # For example, if the torch R package uses libtorch 2.7.1:
+<<<<<<< HEAD
 git checkout v0.23.0   # (v0.23.0 corresponds to libtorch 2.8.0 matching {torch} 0.18.0)
+=======
+git checkout v0.22   # (v0.22.x corresponds to libtorch 2.7.1)
+>>>>>>> 292243d10cdf752c15a9ea6ddde889d3e04b0726
 ```
 > Why a tag?
 > libtorch and torchvision must be binary compatible. The 
@@ -358,3 +360,4 @@ readelf -d "$INST_LIB/libtorchvision.so" | grep RUNPATH
 #>  0x000000000000001d (RUNPATH)            Bibliothèque runpath :[~/R/x86_64-pc-linux-gnu-library/4.5/torch/lib]
 ```
 Once you have performed (a)–(f) once, you can rebuild the R package any number of times simply by re‑sourcing the script and calling R CMD INSTALL. No further CMake step is required unless you upgrade torch or want a different torchvision version.
+

@@ -11,7 +11,6 @@ Description: Implements additional operators for computer vision models, includi
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.6)
 LinkingTo: 
@@ -28,3 +27,4 @@ Suggests:
 Config/testthat/edition: 3
 URL: https://github.com/mlverse/torchvisionlib
 BugReports: https://github.com/mlverse/torchvisionlib/issues
+Config/roxygen2/version: 8.0.0
